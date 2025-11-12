@@ -33,7 +33,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // bgDiv.style.backgroundImage = `url("../images/winter.jpg")`;
     bgDiv.replaceWith(video);
   } else {
-    bgDiv.style.backgroundImage = `url("../images/winter.jpg")`;
+    bgDiv.style.backgroundImage = `url(".../images/winter.jpg")`;
   }
 });
 
