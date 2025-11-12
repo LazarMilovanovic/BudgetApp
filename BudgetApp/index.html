@@ -6,34 +6,33 @@
     <meta name="description" content="Track your expenses, manage your income, and take control of your budget" />
     <link rel="stylesheet" href="../style/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-
     <title>Budget App</title>
   </head>
   <body>
     <main>
-      <div class="background-img" id="seasons-background"></div>
-      <h1 class="main__title">Budget App</h1>
+      <div class="background" id="seasons-background"></div>
+      <h1 class="title">Budget App</h1>
 
       <!-- Start Form -->
-      <form class="add-transaction-form" id="transaction-form">
-        <p>Add transasction</p>
+      <form class="transaction-form" id="transaction-form">
+        <p>Add transaction</p>
         <div class="transactions">
           <div class="transactions__type">
-            <label for="plus-radio">&#43;</label>
-            <input type="radio" id="plus-radio" name="plus-minus" class="plus-radio" value="+" required />
-            <label for="minus-radio">&#8722;</label>
-            <input type="radio" id="minus-radio" name="plus-minus" class="minus-radio" value="-" required />
+            <label for="income">&#43;</label>
+            <input type="radio" id="income" name="transaction-type" class="income" value="+" required />
+            <label for="expense">&#8722;</label>
+            <input type="radio" id="expense" name="transaction-type" class="expense" value="-" required />
           </div>
           <!--  -->
-          <input type="number" name="number" id="amount-input" class="transactions__amount" required aria-label="amount" value="1000" />
+          <input type="number" name="transaction-amount" id="transaction-amount" class="transactions__amount" required aria-label="Transaction amount" value="1000" />
           <!--  -->
-          <input type="text" placeholder="Category" id="title-input" class="transactions__title" required aria-label="transactions title" />
+          <input type="text" placeholder="Title" id="transaction-title" name="transaction-title" class="transactions__title" required aria-label="Transaction title" />
           <!--  -->
-          <input type="date" class="transactions__date" id="date-input" name="date" required aria-label="date" />
-          <button type="submit" class="add-transaction" id="add-el">Add</button>
+          <input type="date" class="transactions__date" id="transaction-date" name="transaction-date" required aria-label="Transaction date" />
+          <button type="submit" class="add-transaction" id="add-transaction">Add</button>
         </div>
       </form>
-      <!-- EndForm -->
+      <!-- End Form -->
       <div class="list" id="transaction-list">
         <p>Transactions:</p>
       </div>

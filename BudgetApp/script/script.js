@@ -1,19 +1,17 @@
-const income = document.getElementById("plus-radio");
-const expense = document.getElementById("minus-radio");
-const transactionType = document.querySelector("plus-minus");
-const amount = document.getElementById("amount-input");
-const title = document.getElementById("title-input");
-const date = document.getElementById("date-input");
-const addElementBtn = document.getElementById("add-el");
+const income = document.getElementById("income");
+const expense = document.getElementById("expense");
+const amount = document.getElementById("transaction-amount");
+const title = document.getElementById("transaction-title");
+const date = document.getElementById("transaction-date");
+const addTransaction = document.getElementById("add-transaction");
 const transactionList = document.getElementById("transaction-list");
 const transactionInfo = document.getElementById("transaction-info");
+const bgDiv = document.getElementById("seasons-background");
 
 ////////////////////////
 //Seasonal Background//
 //////////////////////
 window.addEventListener("DOMContentLoaded", () => {
-  const bgDiv = document.getElementById("seasons-background");
-
   const video = document.createElement("video");
   video.src = "../images/video.mp4";
   video.controls = false;
@@ -83,7 +81,7 @@ function formValidation() {
 
 const transactionArr = JSON.parse(localStorage.getItem("transactions")) || [];
 
-window.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   if (transactionArr.length >= 1) {
     displayTransactionInfo();
   }
@@ -94,7 +92,7 @@ window.addEventListener("DOMContentLoaded", () => {
 ///////////////////////
 function showTransactions() {
   transactionArr.forEach((element) => {
-    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" data-id="${element.id}">
+    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" id="${element.id}">
   <p>${element.type}${element.amount}</p>
   <p>${element.title}</p>
   <p>${element.date}</p>
@@ -110,7 +108,7 @@ showTransactions();
 ////////////////////
 //Add Transaction//
 //////////////////
-addElementBtn.addEventListener("click", (e) => {
+addTransaction.addEventListener("click", (e) => {
   e.preventDefault();
   if (!formValidation()) return;
 
@@ -123,7 +121,7 @@ addElementBtn.addEventListener("click", (e) => {
     date: date.value,
   };
 
-  transactionList.innerHTML += `<div class="list-element ${getTransactionClass()}" data-id="${transactionElement.id}">
+  transactionList.innerHTML += `<div class="list-element ${getTransactionClass()}" id="${transactionElement.id}">
   <p>${getTransactionType()}${amount.value} </p>
   <p>${title.value}</p>
   <p>${date.value}</p>
@@ -152,26 +150,26 @@ addElementBtn.addEventListener("click", (e) => {
 
 function editTransaction(btnEl) {
   const transaction = btnEl.parentElement.parentElement;
-  const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.dataset.id);
+  const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.id);
   // console.log(transactionArrIndex);
-  transaction.outerHTML = `<form action="" class="edit-form" id="edit-transaction" data-id="${transactionArr[transactionArrIndex].id}">
+  transaction.outerHTML = `<form action="" class="edit-form" id="edit-transaction" id="${transactionArr[transactionArrIndex].id}">
         <div class="edit-transactions">
           <div class="transactions__type">
-            <label for="plus-radio">&#43;</label>
+            <label for="edit-plus-radio">&#43;</label>
             <input
               type="radio"
               id="edit-plus-radio"
-              name="plus-minus"
+              name="transaction-type"
               class="plus-radio"
               value="+"
               required
               ${transactionArr[transactionArrIndex].transactionClass === "income" ? "checked" : ""}
             />
-            <label for="minus-radio">&#8722;</label>
+            <label for="edit-minus-radio">&#8722;</label>
             <input
               type="radio"
               id="edit-minus-radio"
-              name="plus-minus"
+              name="transaction-type"
               class="minus-radio"
               value="-"
               required
@@ -180,7 +178,7 @@ function editTransaction(btnEl) {
           </div>
           <input
             type="number"
-            name="number"
+            name="transaction-amount"
             id="edit-amount-input"
             class="transactions__amount"
             required
@@ -189,6 +187,7 @@ function editTransaction(btnEl) {
           />
           <input
             type="text"
+            name="transaction-title"
             placeholder="Category"
             id="edit-title-input"
             class="transactions__title"
@@ -200,7 +199,7 @@ function editTransaction(btnEl) {
             type="date"
             class="transactions__date"
             id="edit-date-input"
-            name="date"
+            name="transaction-date"
             required
             aria-label="date"
             value='${transactionArr[transactionArrIndex].date}'
@@ -209,14 +208,11 @@ function editTransaction(btnEl) {
           <button type="button" class="cancel-edit" onclick="cancelEdit()" aria-label="cancel edit">Cancel</button>
         </div>
    </form>`;
-  // console.log(transactionArr);
-  displayTransactionInfo();
 }
 
 //////////////
 //Save Edit//
 ////////////
-
 function saveEdit() {
   const saveTransction = document.getElementById("edit-transaction");
   const editIncome = document.getElementById("edit-plus-radio");
@@ -225,23 +221,23 @@ function saveEdit() {
   const editTitle = document.getElementById("edit-title-input");
   const editDate = document.getElementById("edit-date-input");
 
-  const getEditTransactionClass = () => {
+  function getEditTransactionClass() {
     if (editIncome.checked) {
       return "income";
     } else if (editExpense.checked) {
       return "expense";
     }
-  };
+  }
 
-  const getEditTransactionType = () => {
+  function getEditTransactionType() {
     if (editIncome.checked) {
       return editIncome.value;
     } else if (editExpense.checked) {
       return editExpense.value;
     }
-  };
+  }
 
-  const editFormValidation = () => {
+  function editFormValidation() {
     if (!editIncome.checked && !editExpense.checked) {
       alert("You didnt select transaction type");
       return false;
@@ -257,11 +253,11 @@ function saveEdit() {
     } else {
       return true;
     }
-  };
+  }
   if (!editFormValidation()) return;
 
   const editedTransaction = {
-    id: saveTransction.dataset.id,
+    id: saveTransction.id,
     transactionClass: getEditTransactionClass(),
     type: getEditTransactionType(),
     amount: editAmount.value,
@@ -269,11 +265,11 @@ function saveEdit() {
     date: editDate.value,
   };
 
-  const transactionArrIndex = transactionArr.findIndex((el) => el.id === saveTransction.dataset.id);
+  const transactionArrIndex = transactionArr.findIndex((el) => el.id === saveTransction.id);
   transactionArr.splice(transactionArrIndex, 1, editedTransaction);
   localStorage.setItem("transactions", JSON.stringify(transactionArr));
 
-  saveTransction.outerHTML = `<div class="list-element ${getEditTransactionClass()}" data-id="${editedTransaction.id}">
+  saveTransction.outerHTML = `<div class="list-element ${getEditTransactionClass()}" id="${editedTransaction.id}">
   <p>${getEditTransactionType()}${editAmount.value}</p>
   <p>${editTitle.value}</p>
   <p>${editDate.value}</p>
@@ -299,7 +295,7 @@ function cancelEdit() {
 /////////////////////
 function deleteTransaction(btnEl) {
   const transaction = btnEl.parentElement.parentElement;
-  const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.dataset.id);
+  const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.id);
   transaction.remove();
   transactionArr.splice(transactionArrIndex, 1);
   localStorage.setItem("transactions", JSON.stringify(transactionArr));
@@ -332,8 +328,8 @@ function displayTransactionInfo() {
   <button type="button" class="clear-transactions" onclick="clearTransactions()" aria-label='Clear transactions button'></button>
   </span>
   <div class="transaction-canculations">
-  <p >Income:<strong>${totalIncome()}</strong></p>
-  <p >Expense:<strong>${totalExpenses()}</strong></p>
+  <p>Income:<strong>${totalIncome()}</strong></p>
+  <p>Expense:<strong>${totalExpenses()}</strong></p>
   <p>Budget:<strong>${totalIncome() - totalExpenses()}</strong></p>
   <p>Expenses = <strong>${precentageSpent()}%</strong> of income</p>
   </div>`;
@@ -424,12 +420,12 @@ function hideChart() {
 //Sort Transactions//
 ////////////////////
 function sortTransactions() {
-  // console.log(document.getElementById("sort-transactions").value);
+  console.log(document.getElementById("sort-transactions").value);
   const selectValue = document.getElementById("sort-transactions").value;
   if (selectValue === "original") {
     transactionList.innerHTML = "";
     showTransactions();
-    console.log(transactionArr);
+    // console.log(transactionArr);
   } else if (selectValue === "incomes") {
     showIncomes();
   } else if (selectValue === "expenses") {
@@ -444,7 +440,7 @@ function showIncomes() {
   // console.log(allIncomes);
   transactionList.innerHTML = "";
   allIncomes.forEach((element) => {
-    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" data-id="${element.id}">
+    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" id="${element.id}">
   <p>${element.type}${element.amount}</p>
   <p>${element.title}</p>
   <p>${element.date}</p>
@@ -461,7 +457,7 @@ function showExpenses() {
   // console.log(allExpenses);
   transactionList.innerHTML = "";
   allExpenses.forEach((element) => {
-    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" data-id="${element.id}">
+    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" id="${element.id}">
   <p>${element.type}${element.amount}</p>
   <p>${element.title}</p>
   <p>${element.date}</p>
@@ -475,7 +471,7 @@ function showExpenses() {
 
 function sortByCategory() {
   const sortArr = [...transactionArr];
-  console.log(sortArr);
+  // console.log(sortArr);
   // console.log(transactionArr);
   const sortByCategory = sortArr.sort((a, b) => {
     if (a.title < b.title) return -1;
@@ -485,7 +481,7 @@ function sortByCategory() {
   // console.log(sortByCategory);
   transactionList.innerHTML = "";
   sortByCategory.forEach((element) => {
-    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" data-id="${element.id}">
+    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" id="${element.id}">
   <p>${element.type}${element.amount}</p>
   <p>${element.title}</p>
   <p>${element.date}</p>
