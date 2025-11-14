@@ -30,8 +30,8 @@ window.addEventListener("DOMContentLoaded", () => {
   } else if (today >= 621 && today < 923) {
     bgDiv.style.backgroundImage = `url("../images/summer.jpg")`;
   } else if (today >= 923 && today < 1221) {
-    // bgDiv.style.backgroundImage = `url("../images/winter.jpg")`;
-    bgDiv.replaceWith(video);
+     bgDiv.style.backgroundImage = `url("../images/winter.jpg")`;
+    // bgDiv.replaceWith(video);
   } else {
     bgDiv.style.backgroundImage = `url(".../images/winter.jpg")`;
   }
@@ -494,6 +494,7 @@ function sortByCategory() {
   // console.log(transactionArr);
 }
 // console.log(transactionArr);
+
 
 
 
