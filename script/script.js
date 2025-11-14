@@ -12,13 +12,13 @@ const bgDiv = document.getElementById("seasons-background");
 //Seasonal Background//
 //////////////////////
 window.addEventListener("DOMContentLoaded", () => {
-  // const video = document.createElement("video");
-  // video.src = "../images/video.mp4";
-  // video.controls = false;
-  // video.autoplay = true;
-  // video.loop = true;
-  // video.muted = true;
-  // video.classList.add("main__bg-video");
+  const video = document.createElement("video");
+  video.src = "./images/video.mp4";
+  video.controls = false;
+  video.autoplay = true;
+  video.loop = true;
+  video.muted = true;
+  video.classList.add("main__bg-video");
 
   const now = new Date();
   const month = now.getMonth() + 1;
@@ -30,8 +30,8 @@ window.addEventListener("DOMContentLoaded", () => {
   } else if (today >= 621 && today < 923) {
     bgDiv.style.backgroundImage = `url("../images/summer.jpg")`;
   } else if (today >= 923 && today < 1221) {
-     bgDiv.style.backgroundImage = `url("../images/winter.jpg")`;
-    // bgDiv.replaceWith(video);
+     // bgDiv.style.backgroundImage = `url("../images/winter.jpg")`;
+    bgDiv.replaceWith(video);
   } else {
     bgDiv.style.backgroundImage = `url(".../images/winter.jpg")`;
   }
@@ -494,6 +494,7 @@ function sortByCategory() {
   // console.log(transactionArr);
 }
 // console.log(transactionArr);
+
 
 
 
