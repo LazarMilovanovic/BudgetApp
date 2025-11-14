@@ -13,7 +13,7 @@ const bgDiv = document.getElementById("seasons-background");
 //////////////////////
 window.addEventListener("DOMContentLoaded", () => {
   const video = document.createElement("video");
-  video.src = "images/video.mp4";
+  video.src = "/images/video.mp4";
   video.controls = false;
   video.autoplay = true;
   video.loop = true;
@@ -494,4 +494,5 @@ function sortByCategory() {
   // console.log(transactionArr);
 }
 // console.log(transactionArr);
+
 
