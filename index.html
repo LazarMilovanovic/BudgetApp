@@ -10,12 +10,16 @@
   </head>
   <body>
     <main>
+      <video class="main__bg-video" id="bg-video" autoplay loop muted>
+        <source src="images/video.mp4" type="video/mp4" />
+      </video>
       <div class="background" id="seasons-background"></div>
+
       <h1 class="title">Budget App</h1>
 
       <!-- Start Form -->
       <form class="transaction-form" id="transaction-form">
-        <p>Add transaction</p>
+        <p class="transaction-form__text">Add transaction</p>
         <div class="transactions">
           <div class="transactions__type">
             <label for="income">&#43;</label>
@@ -24,18 +28,18 @@
             <input type="radio" id="expense" name="transaction-type" class="expense" value="-" required />
           </div>
           <!--  -->
-          <input type="number" name="transaction-amount" id="transaction-amount" class="transactions__amount" required aria-label="Transaction amount" value="1000" />
+          <input type="number" name="transaction-amount" id="transaction-amount" class="transactions__amount" required aria-label="Transaction amount" placeholder="Amount" />
           <!--  -->
           <input type="text" placeholder="Title" id="transaction-title" name="transaction-title" class="transactions__title" required aria-label="Transaction title" />
           <!--  -->
-          <input type="date" class="transactions__date" id="transaction-date" name="transaction-date" required aria-label="Transaction date" />
+          <input type="date" class="transactions__date" id="transaction-date" cursor="pointer" name="transaction-date" required aria-label="Transaction date" />
           <button type="submit" class="add-transaction" id="add-transaction">Add</button>
         </div>
       </form>
       <!-- End Form -->
-      <div class="list" id="transaction-list">
+      <ul class="list" id="transaction-list">
         <p>Transactions:</p>
-      </div>
+      </ul>
       <div class="transaction-info" id="transaction-info"></div>
     </main>
 
@@ -43,6 +47,3 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </body>
 </html>
-
-
-

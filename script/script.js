@@ -6,44 +6,47 @@ const date = document.getElementById("transaction-date");
 const addTransaction = document.getElementById("add-transaction");
 const transactionList = document.getElementById("transaction-list");
 const transactionInfo = document.getElementById("transaction-info");
-const bgDiv = document.getElementById("seasons-background");
+const bgDiv = document.getElementById("seasons-background"); //Backgroung
+const video = document.getElementById("bg-video"); //Background
+const transactionFrom = document.getElementById("transaction-form");
+
+const transactionArr = JSON.parse(localStorage.getItem("transactions")) || [];
 
 ////////////////////////
 //Seasonal Background//
 //////////////////////
 window.addEventListener("DOMContentLoaded", () => {
-  const video = document.createElement("video");
-  video.src = "images/video.mp4";
-  video.controls = false;
-  video.autoplay = true;
-  video.loop = true;
-  video.muted = true;
-  video.classList.add("main__bg-video");
+  const dayOfYear = (date) => Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+  let today = dayOfYear(new Date());
 
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const day = now.getDate();
-  const today = month * 100 + day;
+  video.classList.remove("show-video");
+  video.classList.add("hide-video");
 
-  if (today >= 320 && today < 621) {
+  if (today >= 79 && today < 172) {
     bgDiv.style.backgroundImage = `url("images/spring.jpg")`;
-  } else if (today >= 621 && today < 923) {
+  } else if (today >= 172 && today < 266) {
     bgDiv.style.backgroundImage = `url("images/summer.jpg")`;
-  } else if (today >= 923 && today < 1221) {
-     // bgDiv.style.backgroundImage = `url("images/winter.jpg")`;
-    bgDiv.replaceWith(video);
+  } else if (today >= 266 && today < 355) {
+    video.classList.remove("hide-video");
+    video.classList.add("show-video");
   } else {
     bgDiv.style.backgroundImage = `url("images/winter.jpg")`;
   }
+  // Show Transaction Info
+  if (transactionArr.length >= 1) {
+    displayTransactionInfo();
+  }
 });
 
-income.addEventListener("click", () => {
-  amount.style.backgroundColor = "var(--income-color)"; //green
-});
+income.onclick = () => {
+  amount.classList.remove("expense"); //red
+  amount.classList.add("income"); //green
+};
 
-expense.addEventListener("click", () => {
-  amount.style.backgroundColor = "var(--expense-color)"; //red
-});
+expense.onclick = () => {
+  amount.classList.remove("income"); //green
+  amount.classList.add("expense"); //red
+};
 
 function getTransactionClass() {
   if (income.checked) {
@@ -62,53 +65,84 @@ function getTransactionType() {
 }
 
 function formValidation() {
+  const today = new Date();
+  const todayDateStr = today.toISOString().split("T")[0];
+  const todayDate = new Date(todayDateStr);
+  const inputDate = new Date(date.value);
+  const containsNumber = /\d/;
+  const inputTitle = title.value.trim();
+
   if (!income.checked && !expense.checked) {
     alert("You didnt select transaction type");
     return false;
-  } else if (amount.value <= 0 || amount.value === "") {
-    alert("Amount is invalid");
+  } else if (amount.value <= 0 || amount.value === "" || amount.value.length > 10 || amount.value % 1 !== 0) {
+    alert("Invalida Amount");
     return false;
-  } else if (title.value.trim() === "") {
-    alert("You didnt enter a title");
+  } else if (inputTitle === "" || inputTitle.length > 15 || containsNumber.test(inputTitle)) {
+    alert("Invalid Title");
     return false;
-  } else if (date.value === "") {
-    alert("You didn't enter a date");
+  } else if (date.value === "" || inputDate > todayDate || inputDate.getFullYear() < 2000) {
+    alert("Invalid date");
     return false;
   } else {
     return true;
   }
 }
 
-const transactionArr = JSON.parse(localStorage.getItem("transactions")) || [];
+//////////////////////
+//Create transaction//
+/////////////////////
+function createTransaction(element) {
+  const li = document.createElement("li");
+  li.className = `list-element ${element.transactionClass}`;
+  li.id = element.id;
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (transactionArr.length >= 1) {
-    displayTransactionInfo();
-  }
-});
+  const typeAmount = document.createElement("p");
+  typeAmount.classList.add("type-amount");
+  typeAmount.textContent = `${element.type}${element.amount}`;
+
+  const transactionTitle = document.createElement("p");
+  transactionTitle.classList.add("title-text");
+  transactionTitle.textContent = element.title;
+
+  const transactionDate = document.createElement("p");
+  transactionDate.textContent = element.date;
+
+  const div = document.createElement("div");
+  div.className = "edit-delete";
+
+  const editBtn = document.createElement("button");
+  editBtn.className = "edit";
+  editBtn.type = "button";
+  editBtn.title = "Edit transaction";
+  editBtn.setAttribute("aria-label", "Edit Button");
+  editBtn.onclick = () => editTransaction(editBtn);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete";
+  deleteBtn.type = "button";
+  deleteBtn.title = "Delete transaction";
+  deleteBtn.setAttribute("aria-label", "Delete Button");
+  deleteBtn.onclick = () => deleteTransaction(deleteBtn);
+
+  div.append(editBtn, deleteBtn);
+  li.append(typeAmount, transactionTitle, transactionDate, div);
+
+  return li;
+}
 
 /////////////////////////
 //Display transactions//
 ///////////////////////
 function showTransactions() {
-  transactionArr.forEach((element) => {
-    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" id="${element.id}">
-  <p>${element.type}${element.amount}</p>
-  <p>${element.title}</p>
-  <p>${element.date}</p>
-  <div class="edit-delete">
-  <button class="edit" type="button" onclick="editTransaction(this)" aria-label="Edit Button"></button>
-  <button class="delete"type="button" onclick="deleteTransaction(this)" aria-label="Delete Button"></button>
-  </div>
-  </div>`;
-  });
+  transactionArr.forEach((element) => transactionList.appendChild(createTransaction(element)));
 }
 showTransactions();
 
 ////////////////////
 //Add Transaction//
 //////////////////
-addTransaction.addEventListener("click", (e) => {
+addTransaction.onclick = (e) => {
   e.preventDefault();
   if (!formValidation()) return;
 
@@ -121,164 +155,229 @@ addTransaction.addEventListener("click", (e) => {
     date: date.value,
   };
 
-  transactionList.innerHTML += `<div class="list-element ${getTransactionClass()}" id="${transactionElement.id}">
-  <p>${getTransactionType()}${amount.value} </p>
-  <p>${title.value}</p>
-  <p>${date.value}</p>
-  <div class="edit-delete">
-  <button class="edit" type="button" onclick="editTransaction(this)" aria-label="Edit Button"></button>
-  <button class="delete"type="button" onclick="deleteTransaction(this)" aria-label="Delete Button"></button>
-  </div>
-  </div>`;
+  const li = document.createElement("li");
+  li.className = `list-element ${transactionElement.transactionClass}`;
+  li.id = transactionElement.id;
+
+  const typeAmount = document.createElement("p");
+  typeAmount.classList.add("type-amount");
+  typeAmount.textContent = `${transactionElement.type}${transactionElement.amount}`;
+
+  const transactionTitle = document.createElement("p");
+  transactionTitle.classList.add("title-text");
+  transactionTitle.textContent = transactionElement.title;
+
+  const transactinDate = document.createElement("p");
+  transactinDate.textContent = transactionElement.date;
+
+  const div = document.createElement("div");
+  div.className = "edit-delete";
+
+  const editBtn = document.createElement("button");
+  editBtn.className = "edit";
+  editBtn.type = "button";
+  editBtn.title = "Edit transaction";
+  editBtn.setAttribute("aria-label", "Edit Button");
+  editBtn.onclick = () => editTransaction(editBtn);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete";
+  deleteBtn.type = "button";
+  deleteBtn.title = "Delete transaction";
+  deleteBtn.setAttribute("aria-label", "Delete Button");
+  deleteBtn.onclick = () => deleteTransaction(deleteBtn);
+
+  div.append(editBtn, deleteBtn);
+  li.append(typeAmount, transactionTitle, transactinDate, div);
+  transactionList.appendChild(li);
 
   income.checked = false;
   expense.checked = false;
   amount.value = "";
-  amount.style.backgroundColor = "transparent";
+  amount.classList.remove("income", "expense");
   title.value = "";
   date.value = "";
 
   transactionArr.push(transactionElement);
-  // console.log(transactionArr);
   localStorage.setItem("transactions", JSON.stringify(transactionArr));
   displayTransactionInfo();
-});
+};
 
 //////////////////////
 //Edit Transactions//
 ////////////////////
-
 function editTransaction(btnEl) {
-  const transaction = btnEl.parentElement.parentElement;
+  const transaction = btnEl.closest("li");
   const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.id);
-  // console.log(transactionArrIndex);
-  transaction.outerHTML = `<form action="" class="edit-form" id="edit-transaction" id="${transactionArr[transactionArrIndex].id}">
-        <div class="edit-transactions">
-          <div class="transactions__type">
-            <label for="edit-plus-radio">&#43;</label>
-            <input
-              type="radio"
-              id="edit-plus-radio"
-              name="transaction-type"
-              class="plus-radio"
-              value="+"
-              required
-              ${transactionArr[transactionArrIndex].transactionClass === "income" ? "checked" : ""}
-            />
-            <label for="edit-minus-radio">&#8722;</label>
-            <input
-              type="radio"
-              id="edit-minus-radio"
-              name="transaction-type"
-              class="minus-radio"
-              value="-"
-              required
-              ${transactionArr[transactionArrIndex].transactionClass === "expense" ? "checked" : ""}
-            />
-          </div>
-          <input
-            type="number"
-            name="transaction-amount"
-            id="edit-amount-input"
-            class="transactions__amount"
-            required
-            aria-label="amount"
-            value="${transactionArr[transactionArrIndex].amount}"
-          />
-          <input
-            type="text"
-            name="transaction-title"
-            placeholder="Category"
-            id="edit-title-input"
-            class="transactions__title"
-            required
-            aria-label="transactions title"  
-            value='${transactionArr[transactionArrIndex].title}'
-          />
-          <input
-            type="date"
-            class="transactions__date"
-            id="edit-date-input"
-            name="transaction-date"
-            required
-            aria-label="date"
-            value='${transactionArr[transactionArrIndex].date}'
-          />
-          <button type="button" class="save-edit" onclick="saveEdit()" aria-label="save edit">Save</button>
-          <button type="button" class="cancel-edit" onclick="cancelEdit()" aria-label="cancel edit">Cancel</button>
-        </div>
-   </form>`;
+
+  const data = transactionArr[transactionArrIndex];
+
+  const form = document.createElement("form");
+  form.className = "edit-form";
+  form.id = `edit-${data.id}`;
+
+  const div = document.createElement("div");
+  div.className = "edit-transactions";
+
+  const typeDiv = document.createElement("div");
+  typeDiv.className = "transactions__type";
+
+  const plusLabel = document.createElement("label");
+  plusLabel.setAttribute("for", "edit-plus-radio");
+  plusLabel.textContent = "+";
+
+  const plusInput = document.createElement("input");
+  plusInput.type = "radio";
+  plusInput.id = "edit-plus-radio";
+  plusInput.name = "transaction-type";
+  plusInput.value = "+";
+  plusInput.required = true;
+  if (data.transactionClass === "income") plusInput.checked = true;
+
+  const minusLabel = document.createElement("label");
+  minusLabel.setAttribute("for", "edit-minus-radio");
+  minusLabel.textContent = "−";
+
+  const minusInput = document.createElement("input");
+  minusInput.type = "radio";
+  minusInput.id = "edit-minus-radio";
+  minusInput.name = "transaction-type";
+  minusInput.value = "-";
+  minusInput.required = true;
+  if (data.transactionClass === "expense") minusInput.checked = true;
+
+  typeDiv.append(plusLabel, plusInput, minusLabel, minusInput);
+
+  const amountInput = document.createElement("input");
+  amountInput.type = "number";
+  amountInput.name = "transaction-amount";
+  amountInput.className = "transactions__amount";
+  amountInput.id = "edit-amount-input";
+  amountInput.required = true;
+  amountInput.value = data.amount;
+
+  const titleInput = document.createElement("input");
+  titleInput.type = "text";
+  titleInput.name = "transaction-title";
+  titleInput.placeholder = "Category";
+  titleInput.className = "transactions__title";
+  titleInput.id = "edit-title-input";
+  titleInput.required = true;
+  titleInput.value = data.title;
+
+  const dateInput = document.createElement("input");
+  dateInput.type = "date";
+  dateInput.name = "transaction-date";
+  dateInput.className = "transactions__date";
+  dateInput.id = "edit-date-input";
+  dateInput.required = true;
+  dateInput.value = data.date;
+
+  const saveBtn = document.createElement("button");
+  saveBtn.type = "button";
+  saveBtn.className = "edit-delete-btn";
+  saveBtn.setAttribute("aria-label", "save edit");
+  saveBtn.textContent = "Save";
+  saveBtn.onclick = () => saveEdit(transaction.id);
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.type = "button";
+  cancelBtn.className = "edit-delete-btn";
+  cancelBtn.setAttribute("aria-label", "cancel edit");
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.onclick = () => cancelEdit(transaction.id);
+
+  div.append(typeDiv, amountInput, titleInput, dateInput, saveBtn, cancelBtn);
+  form.appendChild(div);
+  transaction.replaceWith(form);
 }
 
 //////////////
 //Save Edit//
 ////////////
-function saveEdit() {
-  const saveTransction = document.getElementById("edit-transaction");
+function saveEdit(transactionId) {
+  const form = document.getElementById(`edit-${transactionId}`);
   const editIncome = document.getElementById("edit-plus-radio");
   const editExpense = document.getElementById("edit-minus-radio");
   const editAmount = document.getElementById("edit-amount-input");
   const editTitle = document.getElementById("edit-title-input");
   const editDate = document.getElementById("edit-date-input");
 
-  function getEditTransactionClass() {
-    if (editIncome.checked) {
-      return "income";
-    } else if (editExpense.checked) {
-      return "expense";
-    }
-  }
-
-  function getEditTransactionType() {
-    if (editIncome.checked) {
-      return editIncome.value;
-    } else if (editExpense.checked) {
-      return editExpense.value;
-    }
-  }
-
+  // Validacija forme
   function editFormValidation() {
+    const today = new Date();
+    const todayDateStr = today.toISOString().split("T")[0];
+    const todayDate = new Date(todayDateStr);
+    const inputEditedDate = new Date(editDate.value);
+    const containsNumber = /\d/;
+    const inputTitle = editTitle.value.trim();
+
     if (!editIncome.checked && !editExpense.checked) {
-      alert("You didnt select transaction type");
+      alert("You didn't select transaction type");
       return false;
-    } else if (editAmount.value <= 0 || editAmount.value === "") {
-      alert("Amount is invalid");
+    } else if (editAmount.value <= 0 || editAmount.value === "" || editAmount.value.length > 10) {
+      alert("Invalid Amount");
       return false;
-    } else if (editTitle.value.trim() === "") {
-      alert("You didnt enter a title");
+    } else if (editTitle.value.trim() === "" || editTitle.value.length > 15 || containsNumber.test(inputTitle)) {
+      alert("Invalid Title");
       return false;
-    } else if (editDate.value === "") {
-      alert("You didn't enter a date");
+    } else if (editDate.value === "" || inputEditedDate > todayDate) {
+      alert("Invalid date");
       return false;
-    } else {
-      return true;
     }
+    return true;
   }
+
   if (!editFormValidation()) return;
 
   const editedTransaction = {
-    id: saveTransction.id,
-    transactionClass: getEditTransactionClass(),
-    type: getEditTransactionType(),
+    id: transactionId,
+    transactionClass: editIncome.checked ? "income" : "expense",
+    type: editIncome.checked ? "+" : "-",
     amount: editAmount.value,
     title: editTitle.value,
     date: editDate.value,
   };
 
-  const transactionArrIndex = transactionArr.findIndex((el) => el.id === saveTransction.id);
+  const transactionArrIndex = transactionArr.findIndex((el) => el.id === transactionId);
   transactionArr.splice(transactionArrIndex, 1, editedTransaction);
   localStorage.setItem("transactions", JSON.stringify(transactionArr));
 
-  saveTransction.outerHTML = `<div class="list-element ${getEditTransactionClass()}" id="${editedTransaction.id}">
-  <p>${getEditTransactionType()}${editAmount.value}</p>
-  <p>${editTitle.value}</p>
-  <p>${editDate.value}</p>
-  <div class="edit-delete">
-  <button class="edit" type="button" onclick="editTransaction(this)" aria-label="Edit Button"></button>
-  <button class="delete"type="button" onclick="deleteTransaction(this)" aria-label="Delete Button"></button>
-  </div>
-  </div>`;
+  const li = document.createElement("li");
+  li.className = `list-element ${editedTransaction.transactionClass}`;
+  li.id = editedTransaction.id;
 
+  const typeAmount = document.createElement("p");
+  typeAmount.classList.add("type-amount");
+  typeAmount.textContent = `${editedTransaction.type}${editedTransaction.amount}`;
+
+  const transactionTitle = document.createElement("p");
+  transactionTitle.classList.add("title-text");
+  transactionTitle.textContent = editedTransaction.title;
+
+  const transactionDate = document.createElement("p");
+  transactionDate.textContent = editedTransaction.date;
+
+  const div = document.createElement("div");
+  div.className = "edit-delete";
+
+  const editBtn = document.createElement("button");
+  editBtn.className = "edit";
+  editBtn.type = "button";
+  editBtn.title = "Edit transaction";
+  editBtn.setAttribute("aria-label", "Edit Button");
+  editBtn.onclick = () => editTransaction(editBtn);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "delete";
+  deleteBtn.type = "button";
+  deleteBtn.title = "Delete transaction";
+  deleteBtn.setAttribute("aria-label", "Delete Button");
+  deleteBtn.onclick = () => deleteTransaction(deleteBtn);
+
+  div.append(editBtn, deleteBtn);
+  li.append(typeAmount, transactionTitle, transactionDate, div);
+  form.replaceWith(li);
   displayTransactionInfo();
 }
 
@@ -286,7 +385,7 @@ function saveEdit() {
 //Cancel edit//
 //////////////
 function cancelEdit() {
-  transactionList.innerHTML = "";
+  transactionList.textContent = "Transactions:";
   showTransactions();
 }
 
@@ -294,16 +393,38 @@ function cancelEdit() {
 //Delete Transaction//
 /////////////////////
 function deleteTransaction(btnEl) {
-  const transaction = btnEl.parentElement.parentElement;
-  const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.id);
-  transaction.remove();
-  transactionArr.splice(transactionArrIndex, 1);
-  localStorage.setItem("transactions", JSON.stringify(transactionArr));
+  const transaction = btnEl.closest(".list-element");
+  transaction.classList.add("delete-question");
+  transaction.textContent = "Do you want to delete this transaction?";
+
+  const yesBtn = document.createElement("button");
+  yesBtn.type = "button";
+  yesBtn.className = "edit-delete-btn";
+  yesBtn.setAttribute("aria-label", "Delete transaction");
+  yesBtn.textContent = "Yes";
+  yesBtn.onclick = () => {
+    const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.id);
+    transaction.remove();
+    transactionArr.splice(transactionArrIndex, 1);
+    localStorage.setItem("transactions", JSON.stringify(transactionArr));
+    displayTransactionInfo();
+  };
+
+  const noBtn = document.createElement("button");
+  noBtn.type = "button";
+  noBtn.className = "edit-delete-btn";
+  noBtn.setAttribute("aria-label", "Cancel delete");
+  noBtn.textContent = "No";
+  noBtn.onclick = () => {
+    transactionList.textContent = "Transactions:";
+    showTransactions();
+  };
+
+  transaction.append(yesBtn, noBtn);
 
   if (transactionArr.length === 0) {
-    transactionInfo.innerHTML = "";
+    transactionInfo.textContent = "";
   }
-  displayTransactionInfo();
 }
 
 /////////////////////
@@ -311,34 +432,84 @@ function deleteTransaction(btnEl) {
 ///////////////////
 function displayTransactionInfo() {
   if (transactionArr.length === 0) {
-    transactionInfo.innerHTML = "";
+    transactionInfo.textContent = "";
     return;
   }
-  transactionInfo.innerHTML = `
-  <span class="info-options">
-  <button type="button" class="chart" onclick="showAndHideChart()" aria-label='show or hide chart'></button>
-  <select class="sort-transactions" name="sort-transactions" id="sort-transactions" onchange='sortTransactions()' aria-label="Sort transactions">
-  <option value="" disabled selected hidden>Chose sort option</options>
-  <option value="original">Original List</option>
-  <option value="incomes">Income</option>
-  <option value="expenses">Expenses</option>
-  <option value="category">By Category</option>
-  
-</select>
-  <button type="button" class="clear-transactions" onclick="clearTransactions()" aria-label='Clear transactions button'></button>
-  </span>
-  <div class="transaction-canculations">
-  <p>Income:<strong>${totalIncome()}</strong></p>
-  <p>Expense:<strong>${totalExpenses()}</strong></p>
-  <p>Budget:<strong>${totalIncome() - totalExpenses()}</strong></p>
-  <p>Expenses = <strong>${precentageSpent()}%</strong> of income</p>
-  </div>`;
+  transactionInfo.textContent = "";
+
+  const infoOptions = document.createElement("div");
+  infoOptions.className = "info-options";
+
+  const chartBtn = document.createElement("button");
+  chartBtn.type = "button";
+  chartBtn.className = "chart";
+  chartBtn.setAttribute("onclick", "showAndHideChart()");
+  chartBtn.setAttribute("aria-label", "show or hide chart");
+  chartBtn.setAttribute("title", "Budget chart");
+
+  const sortSelect = document.createElement("select");
+  sortSelect.className = "sort-transactions";
+  sortSelect.name = "sort-transactions";
+  sortSelect.id = "sort-transactions";
+  sortSelect.setAttribute("onchange", "sortTransactions()");
+  sortSelect.setAttribute("aria-label", "Sort transactions");
+
+  const options = [
+    { value: "", text: "Chose sort option", disabled: true, selected: true, hidden: true },
+    { value: "original", text: "Original List" },
+    { value: "incomes", text: "Income" },
+    { value: "expenses", text: "Expenses" },
+    { value: "category", text: "By Category" },
+  ];
+
+  options.forEach((optData) => {
+    const option = document.createElement("option");
+    option.value = optData.value;
+    option.textContent = optData.text;
+    if (optData.disabled) option.disabled = true;
+    if (optData.selected) option.selected = true;
+    if (optData.hidden) option.hidden = true;
+    sortSelect.appendChild(option);
+  });
+
+  const clearBtn = document.createElement("button");
+  clearBtn.type = "button";
+  clearBtn.id = "clear-transactions";
+  clearBtn.className = "clear-transactions";
+  clearBtn.setAttribute("onclick", "clearTransactions()");
+  clearBtn.setAttribute("aria-label", "Clear transactions button");
+  clearBtn.setAttribute("title", "Delete all transactions");
+
+  infoOptions.append(chartBtn, sortSelect, clearBtn);
+
+  const transactionCalculationsDiv = document.createElement("div");
+  transactionCalculationsDiv.className = "transaction-canculations";
+
+  const infoData = [
+    { text: "Income:", value: totalIncome() },
+    { text: "Expense:", value: totalExpenses() },
+    { text: "Budget:", value: totalIncome() - totalExpenses() },
+    { text: `Expenses = ${precentageSpent()}% of income` },
+  ];
+
+  infoData.forEach((info) => {
+    const p = document.createElement("p");
+    p.textContent = info.text;
+
+    const strong = document.createElement("strong");
+    strong.textContent = info.value;
+
+    p.appendChild(strong);
+    transactionCalculationsDiv.appendChild(p);
+  });
+
+  transactionInfo.append(infoOptions, transactionCalculationsDiv);
 }
 
 function clearTransactions() {
   localStorage.removeItem("transactions");
-  transactionList.innerHTML = "Transactions:";
-  transactionInfo.innerHTML = "";
+  transactionList.textContent = "Transactions:";
+  transactionInfo.textContent = "";
   transactionArr.length = 0;
 }
 
@@ -379,11 +550,12 @@ function showAndHideChart() {
 }
 
 function budgetProgress() {
+  const chronologicalArr = [...transactionArr].sort((a, b) => new Date(a.date) - new Date(b.date));
   const budget = [];
-  for (let i = 0; i < transactionArr.length; i++) {
+  for (let i = 0; i < chronologicalArr.length; i++) {
     let sum = 0;
     for (let j = 0; j <= i; j++) {
-      sum += Number(transactionArr[j].type + transactionArr[j].amount);
+      sum += Number(chronologicalArr[j].type + chronologicalArr[j].amount);
     }
     budget.push(sum);
   }
@@ -391,20 +563,39 @@ function budgetProgress() {
 }
 
 function showChart() {
-  transactionList.innerHTML = `<canvas id='transactions-chart'></canvas>`;
+  const chronologicalArr = [...transactionArr].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const budgetArr = budgetProgress();
+
+  const sortSelect = document.getElementById("sort-transactions");
+  sortSelect.disabled = true;
+  const clearBtn = document.getElementById("clear-transactions");
+  clearBtn.disabled = true;
+  transactionFrom.classList.remove("show-transaction-form");
+  transactionFrom.classList.add("hide-transaction-form");
+
+  transactionList.textContent = "";
+  const canvas = document.createElement("canvas");
+  canvas.id = "transactions-chart";
+  transactionList.appendChild(canvas);
   const ctx = document.getElementById("transactions-chart").getContext("2d");
   const transactionChart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: transactionArr.map((transaction) => transaction.date.split("-").splice(1, 2).join("-")),
+      labels: chronologicalArr.map((transaction) => transaction.date.split("-").splice(1, 2).join("-")),
       datasets: [
         {
           label: "Transactions",
           data: budgetProgress(),
-          borderColor: "rgba(4, 0, 255, 1)",
-          borderWidth: 1,
-          pointStyle: "rectRot",
-          pointRadius: 5,
+          borderWidth: 3,
+          pointStyle: "circle",
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          segment: {
+            borderColor: (ctx) => {
+              const i = ctx.p0DataIndex;
+              return budgetArr[i] < budgetArr[i + 1] ? "rgb(98, 215, 87)" : "rgb(255, 57, 57)"; //Green(First) and Red(Second)
+            },
+          },
         },
       ],
     },
@@ -412,7 +603,14 @@ function showChart() {
 }
 
 function hideChart() {
+  const sortSelect = document.getElementById("sort-transactions");
+  sortSelect.disabled = false;
+  const clearBtn = document.getElementById("clear-transactions");
+  clearBtn.disabled = false;
+  transactionFrom.classList.remove("hide-transaction-form");
+  transactionFrom.classList.add("show-transaction-form");
   transactionList.firstElementChild.remove();
+  transactionList.textContent = "Transactions:";
   showTransactions();
 }
 
@@ -420,12 +618,10 @@ function hideChart() {
 //Sort Transactions//
 ////////////////////
 function sortTransactions() {
-  console.log(document.getElementById("sort-transactions").value);
   const selectValue = document.getElementById("sort-transactions").value;
   if (selectValue === "original") {
-    transactionList.innerHTML = "";
+    transactionList.textContent = "";
     showTransactions();
-    // console.log(transactionArr);
   } else if (selectValue === "incomes") {
     showIncomes();
   } else if (selectValue === "expenses") {
@@ -436,68 +632,45 @@ function sortTransactions() {
 }
 
 function showIncomes() {
+  transactionList.textContent = "Transactions:";
   const allIncomes = transactionArr.filter((element) => element.type === "+");
-  // console.log(allIncomes);
-  transactionList.innerHTML = "";
-  allIncomes.forEach((element) => {
-    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" id="${element.id}">
-  <p>${element.type}${element.amount}</p>
-  <p>${element.title}</p>
-  <p>${element.date}</p>
-  <div class="edit-delete">
-  <button class="edit" type="button" onclick="editTransaction(this)" aria-label="Edit Button"></button>
-  <button class="delete"type="button" onclick="deleteTransaction(this)" aria-label="Delete Button"></button>
-  </div>
-  </div>`;
-  });
+  const allIncomesByValue = allIncomes.sort((a, b) => b.amount - a.amount);
+  const allExpenses = transactionArr.filter((el) => el.type === "-");
+  const allExpensesByValue = allExpenses.sort((a, b) => a.amount - b.amount);
+  const maxToMin = [...allIncomesByValue, ...allExpensesByValue];
+  maxToMin.forEach((element) => transactionList.appendChild(createTransaction(element)));
 }
 
 function showExpenses() {
+  transactionList.textContent = "Transactions:";
+  const allIncomes = transactionArr.filter((element) => element.type === "+");
+  const allIncomesByValue = allIncomes.sort((a, b) => a.amount - b.amount);
   const allExpenses = transactionArr.filter((el) => el.type === "-");
-  // console.log(allExpenses);
-  transactionList.innerHTML = "";
-  allExpenses.forEach((element) => {
-    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" id="${element.id}">
-  <p>${element.type}${element.amount}</p>
-  <p>${element.title}</p>
-  <p>${element.date}</p>
-  <div class="edit-delete">
-  <button class="edit" type="button" onclick="editTransaction(this)" aria-label="Edit Button"></button>
-  <button class="delete"type="button" onclick="deleteTransaction(this)" aria-label="Delete Button"></button>
-  </div>
-  </div>`;
-  });
+  const allExpensesByValue = allExpenses.sort((a, b) => b.amount - a.amount);
+  const minToMax = [...allExpensesByValue, ...allIncomesByValue];
+  minToMax.forEach((element) => transactionList.appendChild(createTransaction(element)));
 }
+
+// Old Sort That shows onli income or only expense
+// function showIncomes() {
+//   const allIncomes = transactionArr.filter((element) => element.type === "+");
+//   transactionList.textContent = "";
+//   allIncomes.forEach((element) => transactionList.appendChild(createTransaction(element)));
+// }
+
+// function showExpenses() {
+//   const allExpenses = transactionArr.filter((el) => el.type === "-");
+//   transactionList.textContent = "";
+//   allExpenses.forEach((element) => transactionList.appendChild(createTransaction(element)));
+// }
 
 function sortByCategory() {
   const sortArr = [...transactionArr];
-  // console.log(sortArr);
-  // console.log(transactionArr);
   const sortByCategory = sortArr.sort((a, b) => {
-    if (a.title < b.title) return -1;
-    if (a.title > b.title) return 1;
+    if (a.title.toUpperCase() < b.title.toUpperCase()) return -1;
+    if (a.title.toUpperCase() > b.title.toUpperCase()) return 1;
     return 0;
   });
-  // console.log(sortByCategory);
-  transactionList.innerHTML = "";
-  sortByCategory.forEach((element) => {
-    transactionList.innerHTML += `<div class="list-element ${element.transactionClass}" id="${element.id}">
-  <p>${element.type}${element.amount}</p>
-  <p>${element.title}</p>
-  <p>${element.date}</p>
-  <div class="edit-delete">
-  <button class="edit" type="button" onclick="editTransaction(this)" aria-label="Edit Button"></button>
-  <button class="delete"type="button" onclick="deleteTransaction(this)" aria-label="Delete Button"></button>
-  </div>
-  </div>`;
-  });
-  // console.log(transactionArr);
+  transactionList.textContent = "Transactions:";
+  sortByCategory.forEach((element) => transactionList.appendChild(createTransaction(element)));
 }
-// console.log(transactionArr);
-
-
-
-
-
-
-

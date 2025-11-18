@@ -35,6 +35,13 @@ main {
   z-index: -1;
   filter: brightness(60%);
 }
+.show-video {
+  display: block;
+}
+
+.hide-video {
+  display: none;
+}
 
 /* /////////// */
 /* Background */
@@ -74,6 +81,10 @@ main {
   max-width: 40rem;
 }
 
+.transaction-form__text {
+  margin: 0.5rem;
+}
+
 .transactions {
   display: flex;
   flex-wrap: wrap;
@@ -95,16 +106,10 @@ main {
 
 .income {
   accent-color: var(--income-color); /*GREEN*/
-  /* font-size: 24px; lighthouse */
-  /* width: 24px;
-  height: 24px; */
 }
 
 .expense {
   accent-color: var(--expense-color); /*RED*/
-  /* font-size: 24px; lighthouse */
-  /* width: 24px;
-  height: 24px; */
 }
 
 .transactions__amount {
@@ -201,6 +206,7 @@ main {
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5%;
   width: 90%;
   min-height: 6rem;
@@ -272,6 +278,13 @@ main {
   max-width: 40rem;
   align-items: center;
   margin-bottom: 0.5rem;
+}
+.info-options {
+  justify-content: center;
+  width: 100%;
+  margin: 0.3rem 0;
+  display: flex;
+  gap: 5%;
 }
 
 .chart {
@@ -356,7 +369,7 @@ main {
   gap: 0.7rem;
 }
 
-.save-edit {
+.edit-delete-btn {
   height: 2rem;
   width: 3rem;
   background: transparent;
@@ -365,20 +378,37 @@ main {
   color: var(--text-color); /*BLACK*/
 }
 
-.cancel-edit {
-  height: 2rem;
-  width: 3rem;
-  background: transparent;
-  border: 1px solid var(--text-color); /*BLACK*/
-  border-radius: 0.5rem;
-  color: var(--text-color); /*BLACK*/
+.show-transaction-form {
+  visibility: visible;
 }
 
+.hide-transaction-form {
+  visibility: hidden;
+}
+
+.type-amount {
+  word-break: break-all;
+}
+
+.title-text {
+  word-break: break-all;
+}
+
+.delete-question {
+  background-color: rgb(94, 174, 249); /*BLUE*/
+}
 /* //////////////////////// */
 /* Tablet and Desktop view */
 /* ////////////////////// */
 @media (min-width: 768px) {
   .transactions__date {
     width: auto;
+  }
+  .info-options {
+    padding: 0.25rem 0;
+    gap: 10%;
+  }
+  .transaction-canculations {
+    gap: 10%;
   }
 }
