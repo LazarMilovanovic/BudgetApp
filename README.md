@@ -14,3 +14,6 @@
   Font-Awesome <br>
   Chart.js
   </p>
+
+LIVE DEMO
+https://lazarmilovanovic.github.io/BudgetApp/
