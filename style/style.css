@@ -19,7 +19,7 @@ main {
   padding: 0 3%;
   display: flex;
   flex-direction: column;
-  height: 90vh;
+  height: 100vh;
 }
 
 /* ///////////////// */
@@ -412,5 +412,6 @@ main {
     gap: 10%;
   }
 }
+
 
 
