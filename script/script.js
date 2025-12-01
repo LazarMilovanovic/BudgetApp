@@ -40,12 +40,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
 income.onclick = () => {
   amount.classList.remove("expense"); //red
-  amount.classList.add("income"); //green
+  amount.classList.add("income", "amount-text"); //green bg and placeholder text white
 };
 
 expense.onclick = () => {
   amount.classList.remove("income"); //green
-  amount.classList.add("expense"); //red
+  amount.classList.add("expense", "amount-text"); //red bg and placeholder text white
 };
 
 function getTransactionClass() {
@@ -89,44 +89,62 @@ function formValidation() {
   }
 }
 
+////////////////////////
+// Create DOM Element//
+//////////////////////
+const createDomElement = ({ elementTag, elClassName, elId, elTextContent, elementTitle, elType, elSetAttValue }) => {
+  const element = document.createElement(elementTag);
+  element.className = elClassName;
+  element.id = elId;
+  element.textContent = elTextContent;
+  element.title = elementTitle;
+  element.type = elType;
+  element.setAttribute("aria-label", elSetAttValue);
+  return element;
+};
+
 //////////////////////
 //Create transaction//
 /////////////////////
 function createTransaction(element) {
-  const li = document.createElement("li");
-  li.className = `list-element ${element.transactionClass}`;
-  li.id = element.id;
-
-  const typeAmount = document.createElement("p");
-  typeAmount.classList.add("type-amount");
-  typeAmount.textContent = `${element.type}${element.amount}`;
-
-  const transactionTitle = document.createElement("p");
-  transactionTitle.classList.add("title-text");
-  transactionTitle.textContent = element.title;
-
-  const transactionDate = document.createElement("p");
-  transactionDate.textContent = element.date;
-
-  const div = document.createElement("div");
-  div.className = "edit-delete";
-
-  const editBtn = document.createElement("button");
-  editBtn.className = "edit";
-  editBtn.type = "button";
-  editBtn.title = "Edit transaction";
-  editBtn.setAttribute("aria-label", "Edit Button");
+  const li = createDomElement({
+    elementTag: "li",
+    elClassName: `list-element ${element.transactionClass}`,
+    elId: element.id,
+  });
+  const typeAmount = createDomElement({
+    elementTag: "p",
+    elClassName: "type-amount",
+    elTextContent: `${element.type}${element.amount}`,
+  });
+  const transactionTitle = createDomElement({
+    elementTag: "p",
+    elClassName: "title-text",
+    elTextContent: `${element.title}`,
+  });
+  const transactionDate = createDomElement({
+    elementTag: "p",
+    elTextContent: `${element.date}`,
+  });
+  const editDelete = createDomElement({ elementTag: "div", elClassName: "edit-delete" });
+  const editBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "edit",
+    elementTitle: "Edit Transaction",
+    elType: "button",
+    elSetAttValue: "Edit Button",
+  });
   editBtn.onclick = () => editTransaction(editBtn);
-
-  const deleteBtn = document.createElement("button");
-  deleteBtn.className = "delete";
-  deleteBtn.type = "button";
-  deleteBtn.title = "Delete transaction";
-  deleteBtn.setAttribute("aria-label", "Delete Button");
+  const deleteBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "delete",
+    elementTitle: "Delete transaction",
+    elType: "button",
+    elSetAttValue: "Delete Button",
+  });
   deleteBtn.onclick = () => deleteTransaction(deleteBtn);
-
-  div.append(editBtn, deleteBtn);
-  li.append(typeAmount, transactionTitle, transactionDate, div);
+  editDelete.append(editBtn, deleteBtn);
+  li.append(typeAmount, transactionTitle, transactionDate, editDelete);
 
   return li;
 }
@@ -155,40 +173,47 @@ addTransaction.onclick = (e) => {
     date: date.value,
   };
 
-  const li = document.createElement("li");
-  li.className = `list-element ${transactionElement.transactionClass}`;
-  li.id = transactionElement.id;
+  const li = createDomElement({
+    elementTag: "li",
+    elClassName: `list-element ${transactionElement.transactionClass}`,
+    elId: `${transactionElement.id}`,
+  });
+  const typeAmount = createDomElement({
+    elementTag: "p",
+    elClassName: "type-amount",
+    elTextContent: `${transactionElement.type}${transactionElement.amount}`,
+  });
+  const transactionTitle = createDomElement({
+    elementTag: "p",
+    elClassName: "title-text",
+    elTextContent: `${transactionElement.title}`,
+  });
+  const transactionDate = createDomElement({
+    elementTag: "p",
+    elTextContent: `${transactionElement.date}`,
+  });
+  const editDelete = createDomElement({ elementTag: "div", elClassName: "edit-delete" });
+  const editBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "edit",
+    elementTitle: "Edit Transaction",
+    elType: "button",
 
-  const typeAmount = document.createElement("p");
-  typeAmount.classList.add("type-amount");
-  typeAmount.textContent = `${transactionElement.type}${transactionElement.amount}`;
-
-  const transactionTitle = document.createElement("p");
-  transactionTitle.classList.add("title-text");
-  transactionTitle.textContent = transactionElement.title;
-
-  const transactinDate = document.createElement("p");
-  transactinDate.textContent = transactionElement.date;
-
-  const div = document.createElement("div");
-  div.className = "edit-delete";
-
-  const editBtn = document.createElement("button");
-  editBtn.className = "edit";
-  editBtn.type = "button";
-  editBtn.title = "Edit transaction";
-  editBtn.setAttribute("aria-label", "Edit Button");
+    elSetAttValue: "Edit Button",
+  });
   editBtn.onclick = () => editTransaction(editBtn);
+  const deleteBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "delete",
+    elementTitle: "Delete transaction",
+    elType: "button",
 
-  const deleteBtn = document.createElement("button");
-  deleteBtn.className = "delete";
-  deleteBtn.type = "button";
-  deleteBtn.title = "Delete transaction";
-  deleteBtn.setAttribute("aria-label", "Delete Button");
+    elSetAttValue: "Delete Button",
+  });
   deleteBtn.onclick = () => deleteTransaction(deleteBtn);
 
-  div.append(editBtn, deleteBtn);
-  li.append(typeAmount, transactionTitle, transactinDate, div);
+  editDelete.append(editBtn, deleteBtn);
+  li.append(typeAmount, transactionTitle, transactionDate, editDelete);
   transactionList.appendChild(li);
 
   income.checked = false;
@@ -197,10 +222,29 @@ addTransaction.onclick = (e) => {
   amount.classList.remove("income", "expense");
   title.value = "";
   date.value = "";
+  amount.classList.remove("amount-text");
 
   transactionArr.push(transactionElement);
   localStorage.setItem("transactions", JSON.stringify(transactionArr));
   displayTransactionInfo();
+};
+
+//////////////////////////////
+// Create Edit Form Element//
+////////////////////////////
+
+const createFormElement = ({ elementTag, elClassName, elId, elTextContent, elType, elName, elValue, elSetForAtt, elRequired, elPlaceholder }) => {
+  const element = document.createElement(elementTag);
+  element.className = elClassName;
+  element.id = elId;
+  element.textContent = elTextContent;
+  element.type = elType;
+  element.name = elName;
+  element.value = elValue;
+  element.setAttribute("for", elSetForAtt);
+  element.required = elRequired;
+  element.placeholder = elPlaceholder;
+  return element;
 };
 
 //////////////////////
@@ -209,86 +253,101 @@ addTransaction.onclick = (e) => {
 function editTransaction(btnEl) {
   const transaction = btnEl.closest("li");
   const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.id);
-
   const data = transactionArr[transactionArrIndex];
 
-  const form = document.createElement("form");
-  form.className = "edit-form";
-  form.id = `edit-${data.id}`;
+  const form = createFormElement({
+    elementTag: "form",
+    elClassName: "edit-form",
+    elId: `edit-${data.id}`,
+  });
+  const fromElements = createFormElement({
+    elementTag: "div",
+    elClassName: "edit-transactions",
+  });
+  const typeDiv = createFormElement({
+    elementTag: "div",
+    elClassName: "transactions__type",
+  });
 
-  const div = document.createElement("div");
-  div.className = "edit-transactions";
+  const plusLabel = createFormElement({
+    elementTag: "label",
+    elTextContent: "+",
+    elSetForAtt: "edit-plus-radio",
+  });
 
-  const typeDiv = document.createElement("div");
-  typeDiv.className = "transactions__type";
-
-  const plusLabel = document.createElement("label");
-  plusLabel.setAttribute("for", "edit-plus-radio");
-  plusLabel.textContent = "+";
-
-  const plusInput = document.createElement("input");
-  plusInput.type = "radio";
-  plusInput.id = "edit-plus-radio";
-  plusInput.name = "transaction-type";
-  plusInput.value = "+";
-  plusInput.required = true;
+  const plusInput = createFormElement({
+    elementTag: "input",
+    elId: "edit-plus-radio",
+    elType: "radio",
+    elName: "transaction-type",
+    elValue: "+",
+    elRequired: true,
+  });
   if (data.transactionClass === "income") plusInput.checked = true;
 
-  const minusLabel = document.createElement("label");
-  minusLabel.setAttribute("for", "edit-minus-radio");
-  minusLabel.textContent = "−";
+  const minusLabel = createFormElement({
+    elementTag: "label",
+    elTextContent: "\u2212",
+    elSetForAtt: "edit-minus-radio",
+  });
 
-  const minusInput = document.createElement("input");
-  minusInput.type = "radio";
-  minusInput.id = "edit-minus-radio";
-  minusInput.name = "transaction-type";
-  minusInput.value = "-";
-  minusInput.required = true;
+  const minusInput = createFormElement({
+    elementTag: "input",
+    elId: "edit-minus-radio",
+    elType: "radio",
+    elName: "transaction-type",
+    elValue: "-",
+    elRequired: true,
+  });
   if (data.transactionClass === "expense") minusInput.checked = true;
 
   typeDiv.append(plusLabel, plusInput, minusLabel, minusInput);
 
-  const amountInput = document.createElement("input");
-  amountInput.type = "number";
-  amountInput.name = "transaction-amount";
-  amountInput.className = "transactions__amount";
-  amountInput.id = "edit-amount-input";
-  amountInput.required = true;
-  amountInput.value = data.amount;
-
-  const titleInput = document.createElement("input");
-  titleInput.type = "text";
-  titleInput.name = "transaction-title";
-  titleInput.placeholder = "Category";
-  titleInput.className = "transactions__title";
-  titleInput.id = "edit-title-input";
-  titleInput.required = true;
-  titleInput.value = data.title;
-
-  const dateInput = document.createElement("input");
-  dateInput.type = "date";
-  dateInput.name = "transaction-date";
-  dateInput.className = "transactions__date";
-  dateInput.id = "edit-date-input";
-  dateInput.required = true;
-  dateInput.value = data.date;
-
-  const saveBtn = document.createElement("button");
-  saveBtn.type = "button";
-  saveBtn.className = "edit-delete-btn";
-  saveBtn.setAttribute("aria-label", "save edit");
-  saveBtn.textContent = "Save";
+  const amountInput = createFormElement({
+    elementTag: "input",
+    elClassName: "transactions__amount",
+    elId: "edit-amount-input",
+    elType: "number",
+    elName: "transaction-amount",
+    elValue: data.amount,
+    elRequired: true,
+  });
+  const titleInput = createFormElement({
+    elementTag: "input",
+    elClassName: "transactions__title",
+    elId: "edit-title-input",
+    elType: "text",
+    elName: "transaction-title",
+    elValue: data.title,
+    elRequired: true,
+  });
+  const dateInput = createFormElement({
+    elementTag: "input",
+    elClassName: "transactions__date",
+    elId: "edit-date-input",
+    elType: "date",
+    elName: "transaction-date",
+    elValue: data.date,
+    elRequired: true,
+  });
+  const saveBtn = createFormElement({
+    elementTag: "button",
+    elClassName: "edit-delete-btn",
+    elTextContent: "Save",
+    elType: "button",
+  });
   saveBtn.onclick = () => saveEdit(transaction.id);
 
-  const cancelBtn = document.createElement("button");
-  cancelBtn.type = "button";
-  cancelBtn.className = "edit-delete-btn";
-  cancelBtn.setAttribute("aria-label", "cancel edit");
-  cancelBtn.textContent = "Cancel";
+  const cancelBtn = createFormElement({
+    elementTag: "button",
+    elClassName: "edit-delete-btn",
+    elTextContent: "Cancel",
+    elType: "button",
+  });
   cancelBtn.onclick = () => cancelEdit(transaction.id);
 
-  div.append(typeDiv, amountInput, titleInput, dateInput, saveBtn, cancelBtn);
-  form.appendChild(div);
+  fromElements.append(typeDiv, amountInput, titleInput, dateInput, saveBtn, cancelBtn);
+  form.append(fromElements);
   transaction.replaceWith(form);
 }
 
@@ -343,40 +402,51 @@ function saveEdit(transactionId) {
   transactionArr.splice(transactionArrIndex, 1, editedTransaction);
   localStorage.setItem("transactions", JSON.stringify(transactionArr));
 
-  const li = document.createElement("li");
-  li.className = `list-element ${editedTransaction.transactionClass}`;
-  li.id = editedTransaction.id;
+  const li = createDomElement({
+    elementTag: "li",
+    elClassName: `list-element ${editedTransaction.transactionClass}`,
+    elId: `${editedTransaction.id}`,
+  });
+  const typeAmount = createDomElement({
+    elementTag: "p",
+    elClassName: "type-amount",
+    elTextContent: `${editedTransaction.type}${editedTransaction.amount}`,
+  });
+  const transactionTitle = createDomElement({
+    elementTag: "p",
+    elClassName: "title-text",
+    elTextContent: `${editedTransaction.title}`,
+  });
+  const transactionDate = createDomElement({
+    elementTag: "p",
+    elTextContent: `${editedTransaction.date}`,
+  });
+  const editDelete = createDomElement({
+    elementTag: "div",
+    elClassName: "edit-delete",
+  });
+  const editBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "edit",
+    elementTitle: "Edit Transaction",
+    elType: "button",
 
-  const typeAmount = document.createElement("p");
-  typeAmount.classList.add("type-amount");
-  typeAmount.textContent = `${editedTransaction.type}${editedTransaction.amount}`;
-
-  const transactionTitle = document.createElement("p");
-  transactionTitle.classList.add("title-text");
-  transactionTitle.textContent = editedTransaction.title;
-
-  const transactionDate = document.createElement("p");
-  transactionDate.textContent = editedTransaction.date;
-
-  const div = document.createElement("div");
-  div.className = "edit-delete";
-
-  const editBtn = document.createElement("button");
-  editBtn.className = "edit";
-  editBtn.type = "button";
-  editBtn.title = "Edit transaction";
-  editBtn.setAttribute("aria-label", "Edit Button");
+    elSetAttValue: "Edit Button",
+  });
   editBtn.onclick = () => editTransaction(editBtn);
 
-  const deleteBtn = document.createElement("button");
-  deleteBtn.className = "delete";
-  deleteBtn.type = "button";
-  deleteBtn.title = "Delete transaction";
-  deleteBtn.setAttribute("aria-label", "Delete Button");
+  const deleteBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "delete",
+    elementTitle: "Delete transaction",
+    elType: "button",
+
+    elSetAttValue: "Delete Button",
+  });
   deleteBtn.onclick = () => deleteTransaction(deleteBtn);
 
-  div.append(editBtn, deleteBtn);
-  li.append(typeAmount, transactionTitle, transactionDate, div);
+  editDelete.append(editBtn, deleteBtn);
+  li.append(typeAmount, transactionTitle, transactionDate, editDelete);
   form.replaceWith(li);
   displayTransactionInfo();
 }
@@ -397,11 +467,13 @@ function deleteTransaction(btnEl) {
   transaction.classList.add("delete-question");
   transaction.textContent = "Do you want to delete this transaction?";
 
-  const yesBtn = document.createElement("button");
-  yesBtn.type = "button";
-  yesBtn.className = "edit-delete-btn";
-  yesBtn.setAttribute("aria-label", "Delete transaction");
-  yesBtn.textContent = "Yes";
+  const yesBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "edit-delete-btn",
+    elTextContent: "Yes",
+    elType: "button",
+    elSetAttValue: "Delete transactions",
+  });
   yesBtn.onclick = () => {
     const transactionArrIndex = transactionArr.findIndex((el) => el.id === transaction.id);
     transaction.remove();
@@ -409,17 +481,17 @@ function deleteTransaction(btnEl) {
     localStorage.setItem("transactions", JSON.stringify(transactionArr));
     displayTransactionInfo();
   };
-
-  const noBtn = document.createElement("button");
-  noBtn.type = "button";
-  noBtn.className = "edit-delete-btn";
-  noBtn.setAttribute("aria-label", "Cancel delete");
-  noBtn.textContent = "No";
+  const noBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "edit-delete-btn",
+    elTextContent: "No",
+    elType: "button",
+    elSetAttValue: "Cancel detele",
+  });
   noBtn.onclick = () => {
     transactionList.textContent = "Transactions:";
     showTransactions();
   };
-
   transaction.append(yesBtn, noBtn);
 
   if (transactionArr.length === 0) {
@@ -437,22 +509,28 @@ function displayTransactionInfo() {
   }
   transactionInfo.textContent = "";
 
-  const infoOptions = document.createElement("div");
-  infoOptions.className = "info-options";
+  const infoOptions = createDomElement({
+    elementTag: "div",
+    elClassName: "info-options",
+  });
 
-  const chartBtn = document.createElement("button");
-  chartBtn.type = "button";
-  chartBtn.className = "chart";
-  chartBtn.setAttribute("onclick", "showAndHideChart()");
-  chartBtn.setAttribute("aria-label", "show or hide chart");
+  const chartBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "chart",
+    elType: "button",
+    elSetAttValue: "Show or Hide Chart",
+  });
+  chartBtn.onclick = () => showAndHideChart();
   chartBtn.setAttribute("title", "Budget chart");
 
-  const sortSelect = document.createElement("select");
-  sortSelect.className = "sort-transactions";
+  const sortSelect = createDomElement({
+    elementTag: "select",
+    elClassName: "sort-transactions",
+    elId: "sort-transactions",
+    elSetAttValue: "Sort transactions",
+  });
   sortSelect.name = "sort-transactions";
-  sortSelect.id = "sort-transactions";
   sortSelect.setAttribute("onchange", "sortTransactions()");
-  sortSelect.setAttribute("aria-label", "Sort transactions");
 
   const options = [
     { value: "", text: "Chose sort option", disabled: true, selected: true, hidden: true },
@@ -472,18 +550,22 @@ function displayTransactionInfo() {
     sortSelect.appendChild(option);
   });
 
-  const clearBtn = document.createElement("button");
-  clearBtn.type = "button";
-  clearBtn.id = "clear-transactions";
-  clearBtn.className = "clear-transactions";
-  clearBtn.setAttribute("onclick", "clearTransactions()");
-  clearBtn.setAttribute("aria-label", "Clear transactions button");
+  const clearBtn = createDomElement({
+    elementTag: "button",
+    elClassName: "clear-transactions clear-btn-hover",
+    elId: "clear-transactions",
+    elType: "button",
+    elSetAttValue: "Clear transactions button",
+  });
+  clearBtn.onclick = () => clearTransactions();
   clearBtn.setAttribute("title", "Delete all transactions");
 
   infoOptions.append(chartBtn, sortSelect, clearBtn);
 
-  const transactionCalculationsDiv = document.createElement("div");
-  transactionCalculationsDiv.className = "transaction-canculations";
+  const transactionCalculationsDiv = createDomElement({
+    elementTag: "div",
+    elClassName: "transaction-canculations",
+  });
 
   const infoData = [
     { text: "Income:", value: totalIncome() },
@@ -570,6 +652,7 @@ function showChart() {
   sortSelect.disabled = true;
   const clearBtn = document.getElementById("clear-transactions");
   clearBtn.disabled = true;
+  clearBtn.classList.remove("clear-btn-hover");
   transactionFrom.classList.remove("show-transaction-form");
   transactionFrom.classList.add("hide-transaction-form");
 
@@ -581,7 +664,7 @@ function showChart() {
   const transactionChart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: chronologicalArr.map((transaction) => transaction.date.split("-").splice(1, 2).join("-")),
+      labels: chronologicalArr.map((transaction) => transaction.date.split("-").splice(0, 2).join("-")), //year and date
       datasets: [
         {
           label: "Transactions",
@@ -607,6 +690,7 @@ function hideChart() {
   sortSelect.disabled = false;
   const clearBtn = document.getElementById("clear-transactions");
   clearBtn.disabled = false;
+  clearBtn.classList.add("clear-btn-hover");
   transactionFrom.classList.remove("hide-transaction-form");
   transactionFrom.classList.add("show-transaction-form");
   transactionList.firstElementChild.remove();
@@ -650,19 +734,6 @@ function showExpenses() {
   const minToMax = [...allExpensesByValue, ...allIncomesByValue];
   minToMax.forEach((element) => transactionList.appendChild(createTransaction(element)));
 }
-
-// Old Sort That shows onli income or only expense
-// function showIncomes() {
-//   const allIncomes = transactionArr.filter((element) => element.type === "+");
-//   transactionList.textContent = "";
-//   allIncomes.forEach((element) => transactionList.appendChild(createTransaction(element)));
-// }
-
-// function showExpenses() {
-//   const allExpenses = transactionArr.filter((el) => el.type === "-");
-//   transactionList.textContent = "";
-//   allExpenses.forEach((element) => transactionList.appendChild(createTransaction(element)));
-// }
 
 function sortByCategory() {
   const sortArr = [...transactionArr];

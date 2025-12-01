@@ -5,7 +5,7 @@
   --expense-color: rgb(255, 57, 57); /*RED*/
   --text-color: rgb(0, 0, 0); /*BLACK*/
   --shadow-color: rgb(105, 105, 105); /*DARK GRAY*/
-  /* overflow: hidden;*/
+  /* overflow: hidden; */
 }
 
 * {
@@ -99,7 +99,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  width: 2rem;
+  width: 1.7rem;
   gap: 2%;
   font-size: 1rem;
 }
@@ -137,6 +137,7 @@ main {
   background: transparent;
   border: 1px solid var(--text-color); /*BLACK*/
   border-radius: 0.5rem;
+  padding-left: 5px;
 }
 
 .transactions__title:focus {
@@ -155,6 +156,7 @@ main {
   border: 1px solid var(--text-color); /*BLACK*/
   border-radius: 0.5rem;
   color: var(--text-color); /*BLACK*/
+  padding-left: 5px;
 }
 
 .add-transaction {
@@ -195,7 +197,7 @@ main {
   padding-top: 0.5rem;
 }
 
-.list:last-child {
+.list-element:last-child {
   margin-bottom: 0.5rem;
 }
 
@@ -224,6 +226,14 @@ main {
 
 .expense {
   background-color: var(--expense-color); /*RED*/
+}
+
+.amount-text {
+  color: rgb(255, 255, 255); /*WHITE*/
+}
+
+.amount-text::placeholder {
+  color: white;
 }
 
 .edit-delete {
@@ -323,7 +333,7 @@ main {
   margin: 0.2rem 0;
 }
 
-.clear-transactions:hover {
+.clear-btn-hover:hover {
   box-shadow: 0.2rem 0.2rem 0.25rem var(--shadow-color); /*DARK GRAY*/
   background-color: var(--text-color); /*black*/
   color: rgb(255, 255, 255); /*WHITE*/
@@ -412,6 +422,3 @@ main {
     gap: 10%;
   }
 }
-
-
-
