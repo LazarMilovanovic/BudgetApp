@@ -94,12 +94,12 @@ function formValidation() {
 //////////////////////
 const createDomElement = ({ elementTag, elClassName, elId, elTextContent, elementTitle, elType, elSetAttValue }) => {
   const element = document.createElement(elementTag);
-  element.className = elClassName;
-  element.id = elId;
-  element.textContent = elTextContent;
-  element.title = elementTitle;
-  element.type = elType;
-  element.setAttribute("aria-label", elSetAttValue);
+  if (elClassName) element.className = elClassName;
+  if (elId) element.id = elId;
+  if (elTextContent) element.textContent = elTextContent;
+  if (elementTitle) element.title = elementTitle;
+  if (elType) element.type = elType;
+  if (elSetAttValue) element.setAttribute("aria-label", elSetAttValue);
   return element;
 };
 
@@ -235,15 +235,15 @@ addTransaction.onclick = (e) => {
 
 const createFormElement = ({ elementTag, elClassName, elId, elTextContent, elType, elName, elValue, elSetForAtt, elRequired, elPlaceholder }) => {
   const element = document.createElement(elementTag);
-  element.className = elClassName;
-  element.id = elId;
-  element.textContent = elTextContent;
-  element.type = elType;
-  element.name = elName;
-  element.value = elValue;
-  element.setAttribute("for", elSetForAtt);
-  element.required = elRequired;
-  element.placeholder = elPlaceholder;
+  if (elClassName) element.className = elClassName;
+  if (elId) element.id = elId;
+  if (elTextContent) element.textContent = elTextContent;
+  if (elType) element.type = elType;
+  if (elName) element.name = elName;
+  if (elValue) element.value = elValue;
+  if (elSetForAtt) element.setAttribute("for", elSetForAtt);
+  if (elRequired) element.required = elRequired;
+  if (elPlaceholder) element.placeholder = elPlaceholder;
   return element;
 };
 
