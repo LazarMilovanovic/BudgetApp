@@ -9,9 +9,9 @@
   <p><strong>Core Technologies:</strong><br>
   HTML <br>
   CSS <br>
-  JavaSctipt <br><br>
-[![My Skills](https://skillicons.dev/icons?i=html,css,js)](https://skillicons.dev)
+  JavaSctipt 
 
+[![My Skills](https://skillicons.dev/icons?i=html,css,js)](https://skillicons.dev)
 
   <strong> Libraries: </strong><br>
   Font-Awesome <br>
